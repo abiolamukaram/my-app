@@ -1,7 +1,8 @@
 import { connectToDB } from "@/lib/mongoDB";
 import { auth } from "@clerk/nextjs/server";
-import { Collection } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+import Collection from "@/lib/models/Collection";
+
 
 export const POST = async (req: NextRequest) => {
     try {
@@ -29,8 +30,39 @@ export const POST = async (req: NextRequest) => {
             description,
             image,
         })
+
+        await newCollection.save();
+
+        return NextResponse.json(newCollection, {status: 200})
+
     } catch (error) {
         console.log("[collections_POST]", error)
+        return new NextResponse("Internal Server Error", {status: 500})
+    }
+}
+
+// export const GET = async (req: NextRequest) => {
+//     try {
+//         await connectToDB()
+
+//         const collections = await Collection.find()
+
+//         return NextResponse.json(collections, {status: 200})
+//     } catch (err) {
+//         console.log("[collections_GET]", err)
+//         return new NextResponse("Internal Server Error", {status: 500})
+//     }
+// }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const GET = async (req: NextRequest) => {
+    try {
+        await connectToDB()
+
+        const Collections = await Collection.find().sort({createdAt: "desc"})
+        return NextResponse.json(Collections, {status: 200})
+    } catch (err) {
+        console.log("[collections_GET]", err)
         return new NextResponse("Internal Server Error", {status: 500})
     }
 }

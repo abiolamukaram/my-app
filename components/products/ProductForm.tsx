@@ -22,19 +22,27 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import Delete from "../custom ui/Delete"
+import { ProductType } from "@/lib/types"
 
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
   description: z.string().min(2).max(500).trim(),
-  image: z.string()
+  media: z.array(z.string()),
+  category: z.string(),
+  collections: z.array(z.string()),
+  tags: z.array(z.string()),
+  sizes: z.array(z.string()),
+  colors: z.array(z.string()),
+  price: z.coerce.number().min(0.1),
+  expense: z.coerce.number().min(0.1)
 });
 
-interface CollectionFormProps {
-initialData?: CollectionType | null; //Must have "?" to make it optional
+interface ProductFormProps {
+initialData?: ProductType | null; //Must have "?" to make it optional
 }
 
-const CollectionForm: React.FC<CollectionFormProps> = ({initialData}) => {
+const ProductForm: React.FC<ProductFormProps> = ({initialData}) => {
   const router = useRouter()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -138,4 +146,4 @@ const CollectionForm: React.FC<CollectionFormProps> = ({initialData}) => {
   )
 }
 
-export default CollectionForm
+export default ProductForm
