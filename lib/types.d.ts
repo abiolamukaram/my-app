@@ -1,4 +1,4 @@
-import Collection from '@/lib/models/Collection';
+
 type CollectionType = {
     _id: string;
     title: string;

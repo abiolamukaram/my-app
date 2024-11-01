@@ -20,14 +20,18 @@ import { Textarea } from "../ui/textarea"
 import ImageUpload from "../custom ui/ImageUpload"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import toast from "react-hot-toast"
+// import toast from "react-hot-toast"
 import Delete from "../custom ui/Delete"
+// import { ToasterProvider } from "@/lib/ToasterProvider"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+  
 
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
   description: z.string().min(2).max(500).trim(),
-  image: z.string()
+  image: z.string(),
 });
 
 interface CollectionFormProps {
@@ -67,7 +71,10 @@ const CollectionForm: React.FC<CollectionFormProps> = ({initialData}) => {
         setLoading(false);
         toast.success(`Collection ${initialData? "updated" : "created"}`);
         // To refresh the collections page
-        window.location.href = "/collections";
+        setTimeout(() => {
+          window.location.href = "/collections";
+        },3000)
+        
         router.push("/collections");
       }
     } catch (error) {
@@ -94,9 +101,9 @@ const CollectionForm: React.FC<CollectionFormProps> = ({initialData}) => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>title</FormLabel>
+              <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="title" {...field} onKeyDown={handleKeyPress} />
+                <Input placeholder="Title" {...field} onKeyDown={handleKeyPress} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,9 +114,9 @@ const CollectionForm: React.FC<CollectionFormProps> = ({initialData}) => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>description</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="description" {...field} rows={5} onKeyDown={handleKeyPress} />
+                <Textarea placeholder="Description" {...field} rows={5} onKeyDown={handleKeyPress} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -120,7 +127,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({initialData}) => {
           name="image"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>image</FormLabel>
+              <FormLabel>Image</FormLabel>
               <FormControl>
                 <ImageUpload value={field.value ? [field.value] :[]} onChange={(url) => field.onChange(url)} onRemove={() => field.onChange("")}/>
               </FormControl>
@@ -134,6 +141,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({initialData}) => {
         </div>
       </form>
     </Form>
+    <ToastContainer />
     </div>
   )
 }
