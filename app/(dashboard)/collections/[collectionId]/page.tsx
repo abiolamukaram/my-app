@@ -10,6 +10,7 @@ const CollectionDetails = ({params} : {params: {CollectionId: string}}) => {
     const [loading, setLoading] = useState(true)
     const [collectionDetails, setCollectionDetails] = useState<CollectionType | null>(null)
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const getCollectionDetails = async () => {
         try {
             const res = await fetch(`/api/collections/${params.CollectionId}`,{
@@ -26,9 +27,9 @@ const CollectionDetails = ({params} : {params: {CollectionId: string}}) => {
 
     useEffect(() => {
         getCollectionDetails()
-    }, [])
+    }, [getCollectionDetails])
 
-  return loading ? <Loader/> : (
+    return loading ? <Loader/> : (
     <div>
       <CollectionForm initialData={collectionDetails} />
     </div>

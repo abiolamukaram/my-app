@@ -24,7 +24,7 @@ const Collections = () => {
       setCollections(data)
       setLoading(false)
     } catch (err) {
-      console.log("[collections_GET]", err)
+      console.log("[collectionId_GET]", err)
     }
   }
 

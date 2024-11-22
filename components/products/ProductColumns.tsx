@@ -20,7 +20,7 @@ export const columns: ColumnDef<ProductType>[] = [
   {
     accessorKey: "collections",
     header: "Collections",
-    cell: ({ row }) => row.original.collections.map((collection) => collection.title).join(","),
+    cell: ({ row }) => row.original.Collections.map((collection) => collection.title).join(","),
   },
   {
     accessorKey: "price",

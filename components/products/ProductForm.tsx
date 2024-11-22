@@ -1,10 +1,11 @@
 "use client";
 
 import { z } from "zod";
-import { Separator } from "../ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
+import { Separator } from "../ui/separator";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,13 +19,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
 import ImageUpload from "../custom ui/ImageUpload";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Delete from "../custom ui/Delete";
 import MultiText from "../custom ui/MultiText";
 import MultiSelect from "../custom ui/MultiSelect";
-// import Product from '../../lib/models/Products';
+import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -40,14 +40,14 @@ const formSchema = z.object({
 });
 
 interface ProductFormProps {
-  initialData?: ProductType | null; //Must have "?" to make it optional
+  initialData?: ProductType; //Must have "?" to make it optional
 }
 
 const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
   const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [collections, setCollections] = useState<CollectionType[]>([]);
 
   const getCollections = async () => {
@@ -58,10 +58,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
       });
       const data = await res.json();
       setCollections(data);
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.log("[collections_GET]", error);
       toast.error("Something went wrong! Please try again.");
+      setLoading(false);
     }
   };
 
@@ -120,12 +121,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
         router.push("/products");
       }
     } catch (error) {
-      console.log("[products_POST", error);
+      console.log("[products_POST]", error);
       toast.error("Something went wrong! Please try again.");
     }
   };
 
-  return (
+  return loading ? (
+    <Loader/>
+  ) : (
     <div className="p-10">
       {initialData ? (
         <div
@@ -133,7 +136,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
         "
         >
           <p className="text-heading2-bold">Edit Product</p>
-          <Delete id={initialData._id} />
+          <Delete id={initialData._id} item={""} />
         </div>
       ) : (
         <p className="text-heading2-bold">Create Product</p>
@@ -185,16 +188,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 <FormLabel>Image</FormLabel>
                 <FormControl>
                   <ImageUpload
-                    value={field.value || []} // Ensure fallback to empty array
+                    value={field.value} // Ensure fallback to empty array
                     onChange={(url) =>
-                      field.onChange([...(field.value || []), url])
+                      field.onChange([...field.value, url])
                     }
                     onRemove={
                       (url) =>
-                        field.onChange(
-                          ...(field.value?.filter((image) => image !== url) ||
-                            []),
-                        ) // Safe fallback
+                        field.onChange([
+                          ...field.value?.filter((image) => image !== url),
+                        ]) // Safe fallback
                     }
                   />
                 </FormControl>
@@ -247,7 +249,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                   <FormLabel>Category</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="category"
+                      placeholder="Category"
                       {...field}
                       onKeyDown={handleKeyPress}
                     />
@@ -267,13 +269,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                       placeholder="Tags"
                       value={field.value} // Ensure fallback
                       onChange={(tag) =>
-                        field.onChange([...(field.value), tag])
+                        field.onChange([...field.value, tag])
                       }
                       onRemove={(tagToRemove) =>
                         field.onChange([
-                          ...(field.value.filter(
+                          ...field.value.filter(
                             (tag) => tag !== tagToRemove
-                          )),
+                          ),
                         ])
                       }
                     />
@@ -282,6 +284,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+            {collections.length > 0 && (
             <FormField
               control={form.control}
               name="collections"
@@ -309,6 +312,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+          )}
             <FormField
               control={form.control}
               name="colors"
